@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการผู้ใช้ - MoodFood Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Kanit', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            color: #ff6b6b;
+            font-size: 32px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .profile-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            background: linear-gradient(white, white) padding-box, linear-gradient(45deg, #ff6b6b, #ee5a24) border-box;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 70px;
+            right: 24px;
+            width: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dropdown button {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #718096, #4a5568);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(113, 128, 150, 0.4);
+        }
+
+        .controls {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        .add-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #4299e1;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background: #f56565;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #e53e3e;
+            transform: translateY(-1px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .close {
+            color: #718096;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
+
+        .btn-save {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width:768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th,
+            td {
+                padding: 12px 8px;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo"><i class="fas fa-heart"></i> MoodFood Admin</div>
+        <div class="nav-right">
+            <img src="../uploads/default-profile.png" alt="โปรไฟล์" class="profile-icon" id="profileIcon" />
+        </div>
+        <div class="dropdown" id="profileDropdown">
+            <p><strong>ข้อมูลส่วนตัว</strong></p>
+            <p id="userEmail"></p>
+            <p id="userPhone"></p>
+            <img id="userImg" alt="โปรไฟล์ผู้ใช้" />
+            <button onclick="location.href='../Edit_profile/edit_profile.html'"><i class="fas fa-edit"></i>
+                แก้ไขข้อมูลส่วนตัว</button>
+            <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">จัดการผู้ใช้</h1>
+            <a href="../Admin/admin_dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i>
+                กลับสู่แดชบอร์ด</a>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหาผู้ใช้ด้วยชื่อ อีเมล หรือเบอร์โทร...">
+            </div>
+            <button class="add-btn" onclick="openAddModal()"><i class="fas fa-plus"></i> เพิ่มผู้ใช้ใหม่</button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>กำลังโหลดข้อมูล...</p>
+        </div>
+
+        <div class="table-container">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ลำดับ</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>อีเมล</th>
+                        <th>เบอร์โทร</th>
+                        <th>ประเภท</th>
+                        <th>วันที่สมัคร</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+            </table>
+        </div>
+
+        <div style="text-align:center; margin-top:16px;">
+            <button id="prevPage" onclick="changePage(currentPage-1)">ก่อนหน้า</button>
+            <span id="pageInfo"></span>
+            <button id="nextPage" onclick="changePage(currentPage+1)">ถัดไป</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">เพิ่มผู้ใช้ใหม่</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="userForm" enctype="multipart/form-data">
+                <input type="hidden" id="userId" name="id">
+                <div class="form-group"><label for="firstName">ชื่อ *</label><input type="text" id="firstName"
+                        name="first_name" required></div>
+                <div class="form-group"><label for="lastName">นามสกุล *</label><input type="text" id="lastName"
+                        name="last_name" required></div>
+                <div class="form-group"><label for="email">อีเมล *</label><input type="email" id="email" name="email"
+                        required></div>
+                <div class="form-group"><label for="phone">เบอร์โทร *</label><input type="tel" id="phone" name="phone"
+                        required></div>
+                <div class="form-group"><label for="userType">ประเภทผู้ใช้ *</label>
+                    <select id="userType" name="role" required>
+                        <option value="">เลือกประเภทผู้ใช้</option>
+                        <option value="user">ผู้ใช้งาน</option>
+                        <option value="admin">ผู้ดูแลระบบ</option>
+                    </select>
+                </div>
+                <!-- ช่องรหัสผ่าน (แสดงเฉพาะตอนเพิ่ม) -->
+                <div class="form-group" id="passwordGroup" style="display:none;">
+                    <label for="password">รหัสผ่าน *</label>
+                    <input type="password" id="password" name="password" minlength="6">
+                </div>
+                <!-- ช่องอัปโหลดรูป (แสดงทั้งเพิ่มและแก้ไข) -->
+                <div class="form-group" id="profileImageGroup">
+                    <label for="profileImage">รูปโปรไฟล์</label>
+                    <input type="file" id="profileImage" name="profile_image" accept="image/*">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-save">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let users = [];
+        let currentPage = 1;
+        const rowsPerPage = 10;
+        let editingUserId = null;
+
+        // Dropdown
+        const profileIcon = document.getElementById("profileIcon");
+        const profileDropdown = document.getElementById("profileDropdown");
+        profileIcon.addEventListener("click", () => profileDropdown.classList.toggle("show"));
+        document.addEventListener("click", e => {
+            if (!profileDropdown.contains(e.target) && e.target !== profileIcon) profileDropdown.classList.remove("show");
+        });
+
+        function logout() { fetch('../Home/logout.php').then(() => window.location.href = '../main/main.html'); }
+
+        function getDefaultProfileSVG(nameInitial) {
+            const initial = nameInitial.charAt(0).toUpperCase();
+            return `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect width='48' height='48' rx='24' fill='%23ff6b6b'/><text x='24' y='30' font-family='Arial' font-size='20' fill='white' text-anchor='middle'>${initial}</text></svg>`;
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            fetch("../Home/check_login.php")
+                .then(res => res.ok ? res.json() : Promise.reject("No user"))
+                .then(user => {
+                    document.getElementById("userEmail").innerHTML = `<i class="fas fa-envelope"></i> อีเมล: ${user.email}`;
+                    document.getElementById("userPhone").innerHTML = `<i class="fas fa-phone"></i> เบอร์โทร: ${user.phone}`;
+                    const profilePath = user.profile_image ? `../uploads/${user.profile_image}` : getDefaultProfileSVG(user.first_name);
+                    document.getElementById("userImg").src = profilePath;
+                    document.getElementById("profileIcon").src = profilePath;
+                }).catch(() => {
+                    const defaultSVG = getDefaultProfileSVG("A");
+                    document.getElementById("userImg").src = defaultSVG;
+                    document.getElementById("profileIcon").src = defaultSVG;
+                    document.getElementById("userEmail").innerHTML = `<i class="fas fa-envelope"></i> อีเมล: admin@moodfood.com`;
+                    document.getElementById("userPhone").innerHTML = `<i class="fas fa-phone"></i> เบอร์โทร: 081-234-5678`;
+                });
+            loadUsers();
+        });
+
+        function loadUsers() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('usersTable').style.display = 'none';
+            fetch('read.php')
+                .then(res => res.ok ? res.json() : Promise.reject(res.status))
+                .then(data => { users = data.records || []; currentPage = 1; displayUsersPage(currentPage); })
+                .catch(err => { console.error(err); users = []; displayUsersPage(currentPage); })
+                .finally(() => { document.getElementById('loading').style.display = 'none'; document.getElementById('usersTable').style.display = 'table'; });
+        }
+
+        function displayUsersPage(page) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const usersToShow = users.slice(start, end);
+            usersToShow.forEach((user, idx) => {
+                const profileImg = user.profile_image ? `../uploads/${user.profile_image}` : getDefaultProfileSVG(user.first_name);
+                const userTypeText = { 'user': 'ผู้ใช้', 'admin': 'ผู้ดูแลระบบ' };
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${start + idx + 1}</td>
+                    <td><img src="${profileImg}" style="width:32px;height:32px;border-radius:50%;margin-right:8px;"> ${user.first_name} ${user.last_name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone || '-'}</td>
+                    <td>${userTypeText[user.role] || user.role}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString('th-TH')}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="openEditModal(${user.id})"><i class="fas fa-edit"></i> แก้ไข</button>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i> ลบ</button>
+                    </td>`;
+                tbody.appendChild(row);
+            });
+            const totalPages = Math.ceil(users.length / rowsPerPage);
+            document.getElementById('pageInfo').textContent = `หน้า ${page} จาก ${totalPages}`;
+            document.getElementById('prevPage').disabled = page === 1;
+            document.getElementById('nextPage').disabled = page === totalPages;
+        }
+
+        function displayUsersPageFiltered(filteredUsers) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const usersToShow = filteredUsers.slice(start, end);
+            usersToShow.forEach((user, idx) => {
+                const profileImg = user.profile_image ? `../uploads/${user.profile_image}` : getDefaultProfileSVG(user.first_name);
+                const userTypeText = { 'user': 'ผู้ใช้', 'admin': 'ผู้ดูแลระบบ' };
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${start + idx + 1}</td>
+                    <td><img src="${profileImg}" style="width:32px;height:32px;border-radius:50%;margin-right:8px;"> ${user.first_name} ${user.last_name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone || '-'}</td>
+                    <td>${userTypeText[user.role] || user.role}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString('th-TH')}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="openEditModal(${user.id})"><i class="fas fa-edit"></i> แก้ไข</button>
+                        <button class="action-btn delete-btn" onclick="deleteUser(${user.id})"><i class="fas fa-trash"></i> ลบ</button>
+                    </td>`;
+                tbody.appendChild(row);
+            });
+            const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
+            document.getElementById('pageInfo').textContent = `หน้า ${currentPage} จาก ${totalPages}`;
+            document.getElementById('prevPage').disabled = currentPage === 1;
+            document.getElementById('nextPage').disabled = currentPage === totalPages;
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > Math.ceil(users.length / rowsPerPage)) return;
+            currentPage = page; displayUsersPage(currentPage);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', e => {
+            const term = e.target.value.toLowerCase();
+            const filtered = users.filter(u => u.first_name.toLowerCase().includes(term) || u.last_name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term) || (u.phone && u.phone.includes(term)));
+            currentPage = 1; displayUsersPageFiltered(filtered);
+        });
+
+        // Modal
+        const modal = document.getElementById('userModal');
+        const form = document.getElementById('userForm');
+
+        function openAddModal() {
+            editingUserId = null;
+            document.getElementById('modalTitle').textContent = "เพิ่มผู้ใช้ใหม่";
+            form.reset();
+            modal.style.display = "block";
+            document.getElementById('passwordGroup').style.display = "block";
+            document.getElementById('password').required = true;
+            document.getElementById('profileImageGroup').style.display = "block";
+        }
+
+        function openEditModal(id) {
+            editingUserId = id;
+            document.getElementById('modalTitle').textContent = "แก้ไขผู้ใช้";
+            const user = users.find(u => u.id === id);
+            if (user) {
+                document.getElementById('userId').value = user.id;
+                document.getElementById('firstName').value = user.first_name;
+                document.getElementById('lastName').value = user.last_name;
+                document.getElementById('email').value = user.email;
+                document.getElementById('phone').value = user.phone;
+                document.getElementById('userType').value = user.role;
+                modal.style.display = "block";
+                document.getElementById('passwordGroup').style.display = "none";
+                document.getElementById('password').required = false;
+                document.getElementById('profileImageGroup').style.display = "block";
+            }
+        }
+
+        function closeModal() { modal.style.display = "none"; }
+        window.onclick = function (event) { if (event.target == modal) closeModal(); }
+
+        // Submit form using JSON
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const userId = editingUserId ? parseInt(document.getElementById('userId').value) : null;
+            const formData = new FormData(form);
+            if (!editingUserId) {
+                // เพิ่มผู้ใช้ ต้องมี password และ status
+                formData.append('status', 'active');
+            }
+            const url = editingUserId ? 'update.php' : 'create.php';
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.ok ? res.json() : res.json().then(err => Promise.reject(err)))
+                .then(data => { alert(data.message); loadUsers(); closeModal(); })
+                .catch(err => { console.error(err); alert(err.message || "เกิดข้อผิดพลาด"); });
+        });
+
+        // Delete
+        function deleteUser(id) {
+            if (confirm("คุณต้องการลบผู้ใช้นี้จริงหรือไม่?")) {
+                fetch('delete.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                })
+                    .then(res => res.ok ? res.json() : res.json().then(err => Promise.reject(err)))
+                    .then(data => { alert(data.message); loadUsers(); })
+                    .catch(err => { console.error(err); alert(err.message || "เกิดข้อผิดพลาด"); });
+            }
+        }
+    </script>
+</body>
+
+
+
+</html>

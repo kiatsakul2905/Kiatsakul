@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>สมัครสมาชิก</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, button { margin: 5px 0; padding: 8px; width: 300px; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>สมัครสมาชิก</h2>
+  <form id="signupForm" enctype="multipart/form-data">
+    <input type="text" name="first_name" placeholder="ชื่อ" required><br>
+    <input type="text" name="last_name" placeholder="นามสกุล" required><br>
+    <input type="email" name="email" placeholder="อีเมล" required><br>
+    <input type="tel" name="phone" placeholder="เบอร์โทรศัพท์ (เช่น 0812345678)" required><br>
+    <input type="password" name="password" placeholder="รหัสผ่าน (ขั้นต่ำ 6 ตัวอักษร)" required><br>
+    <input type="password" name="confirm_password" placeholder="ยืนยันรหัสผ่าน" required><br>
+    <input type="file" name="profile_image" accept="image/png, image/jpeg" required><br>
+    <button type="submit">สมัครสมาชิก</button>
+  </form>
+
+  <p id="message"></p>
+
+  <script>
+    const form = document.getElementById('signupForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      fetch('sign_up.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        message.textContent = data.message;
+        message.className = data.success ? 'success' : 'error';
+        if (data.success) form.reset();
+      })
+      .catch(err => {
+        message.textContent = 'เกิดข้อผิดพลาด: ' + err;
+        message.className = 'error';
+      });
+    });
+  </script>
+</body>
+</html>

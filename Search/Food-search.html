@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MoodFood - ค้นหาอาหาร</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .logo i {
+      color: #ff6b6b;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 107, 107, 0.6));
+      font-size: 32px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo:hover i {
+      transform: scale(1.1);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(255, 107, 107, 0.8));
+      transition: all 0.3s ease;
+    }
+
+    /* Search Section in Nav */
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      max-width: 600px;
+      margin: 0 20px;
+    }
+
+    .nav-search input {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 25px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      font-size: 16px;
+      font-family: 'Kanit', sans-serif;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-search input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .nav-search input::placeholder {
+      color: #a0aec0;
+    }
+
+    .nav-btn {
+      padding: 14px 20px;
+      border-radius: 20px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .nav-search-btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .nav-clear-btn {
+      background: linear-gradient(45deg, #718096, #4a5568);
+      box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3);
+    }
+
+    .nav-clear-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(113, 128, 150, 0.4);
+    }
+
+    .nav-all-btn {
+      background: linear-gradient(45deg, #48bb78, #38a169);
+      box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+    }
+
+    .nav-all-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+    }
+
+    /* Main Content Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Search Section */
+    .search-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .search-section h2 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-weight: 600;
+      font-size: 28px;
+      color: #2d3748;
+      text-align: center;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .search-stats {
+      background: linear-gradient(45deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin: 16px 0;
+      border-left: 4px solid #667eea;
+      font-weight: 500;
+      display: none;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-select {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      font-size: 14px;
+      font-family: 'Kanit', sans-serif;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Food Grid */
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .food-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    .food-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .food-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .food-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .food-card-content {
+      padding: 24px;
+    }
+
+    .food-name {
+      font-weight: 600;
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #2d3748;
+    }
+
+    .food-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .food-calories {
+      color: #718096;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .food-calories i {
+      color: #ff8c00;
+    }
+
+    .food-herbs {
+      color: #48bb78;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .food-mood {
+      color: #667eea;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .view-detail-btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px 18px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .view-detail-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #718096;
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #4a5568;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .pagination button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #4a5568;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 500;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination .current {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+    }
+
+    /* Responsive */
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .nav-search {
+        max-width: 400px;
+        margin: 0 10px;
+      }
+
+      .food-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 16px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
+
+      .logo i {
+        font-size: 28px;
+      }
+
+      .nav-search {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
+        margin: 8px 0 0 0;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      .search-section {
+        padding: 20px 16px;
+      }
+
+      .search-filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-group {
+        justify-content: space-between;
+      }
+
+      .food-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .nav-btn {
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 12px;
+      }
+
+      .nav-search {
+        order: 3;
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      .nav-search input {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .nav-btn {
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+
+      .food-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .search-section h2 {
+        font-size: 20px;
+      }
+    }
+
+
+    .search-filters {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-group {
+      justify-content: space-between;
+    }
+
+    .food-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .nav-btn {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #e55656, #d44a1a);
+    }
+
+    /* Dropdown Styling */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 16px;
+      border-radius: 20px;
+      border: none;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      cursor: pointer;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 160px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 10;
+      flex-direction: column;
+    }
+
+    .dropdown-content button {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #2d3748;
+      transition: background 0.2s;
+    }
+
+    .dropdown-content button:hover {
+      background-color: rgba(102, 126, 234, 0.1);
+    }
+
+    /* Show dropdown */
+    .dropdown.show .dropdown-content {
+      display: flex;
+    }
+
+    /* Responsive: full width on mobile */
+    @media (max-width: 480px) {
+      .dropdown-content {
+        right: 0;
+        left: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="logo" onclick="window.location.href='../Home/index.html'">
+      <i class="fas fa-heart"></i> MoodFood
+    </div>
+
+    <div class="nav-search">
+      <input type="text" id="searchInput" placeholder="ค้นหาชื่ออาหาร, สมุนไพร, ส่วนผสม หรือประเภทอาหาร...">
+
+      <!-- Dropdown -->
+      <div class="dropdown">
+        <button class="nav-btn dropdown-btn"><i class="fas fa-bars"></i> ตัวเลือก</button>
+        <div class="dropdown-content">
+          <button onclick="performSearch()"><i class="fas fa-search"></i> ค้นหา</button>
+          <button onclick="clearSearch()"><i class="fas fa-times"></i> ล้าง</button>
+          <button onclick="loadAllFoods()"><i class="fas fa-list"></i> ทั้งหมด</button>
+        </div>
+      </div>
+    </div>
+
+  </nav>
+
+  <div class="container">
+    <div class="search-section">
+      <h2><i class="fas fa-search"></i> ค้นหาอาหาร</h2>
+      <div id="searchStats" class="search-stats"></div>
+
+      <div class="food-grid" id="foodGrid"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentPage = 1, currentSearch = '', currentFilters = { category: '', sort: 'name', order: 'asc' };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAllFoods();
+      document.getElementById('searchInput').addEventListener('keypress', e => {
+        if (e.key === 'Enter') performSearch();
+      });
+    });
+
+    function performSearch() {
+      const searchTerm = document.getElementById('searchInput').value.trim();
+      if (!searchTerm) { alert('กรุณากรอกคำค้นหา'); return; }
+      currentSearch = searchTerm; currentPage = 1; showLoading();
+
+      const params = new URLSearchParams({
+        action: 'search',
+        search: currentSearch,
+        page: currentPage,
+        sort: currentFilters.sort,
+        order: currentFilters.order
+      });
+      if (currentFilters.category) params.append('category', currentFilters.category);
+
+      fetch(`search_api.php?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) { displaySearchResults(data); updateSearchStats(data.search_term, data.total_results); }
+          else showError(data.message || 'เกิดข้อผิดพลาดในการค้นหา');
+        }).catch(err => { console.error(err); showError('ไม่สามารถค้นหาได้ในขณะนี้'); });
+    }
+
+    function loadAllFoods() {
+      currentSearch = ''; currentPage = 1; showLoading();
+      const params = new URLSearchParams({ action: 'all', page: currentPage, limit: 20, sort: currentFilters.sort, order: currentFilters.order });
+      if (currentFilters.category) params.append('category', currentFilters.category);
+
+      fetch(`search_api.php?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) { displayFoodResults(data); updateSearchStats('ทั้งหมด', data.pagination.total_items); displayPagination(data.pagination); }
+          else showError(data.message || 'เกิดข้อผิดพลาดในการโหลดข้อมูล');
+        }).catch(err => { console.error(err); showError('ไม่สามารถโหลดข้อมูลได้ในขณะนี้'); });
+    }
+
+    function applyFilters() {
+      currentFilters = { category: document.getElementById('categoryFilter').value, sort: document.getElementById('sortFilter').value, order: document.getElementById('orderFilter').value };
+      currentSearch ? performSearch() : loadAllFoods();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = ''; document.getElementById('categoryFilter').value = '';
+      document.getElementById('sortFilter').value = 'name'; document.getElementById('orderFilter').value = 'asc';
+      currentSearch = ''; currentFilters = { category: '', sort: 'name', order: 'asc' };
+      hideSearchStats(); loadAllFoods();
+    }
+
+    function displaySearchResults(data) { displayFoodResults(data); }
+    function displayFoodResults(data) {
+      const foodGrid = document.getElementById('foodGrid'); foodGrid.innerHTML = '';
+      if (data.data.length === 0) { showEmptyState('ไม่พบผลการค้นหา', 'ไม่พบอาหารที่ตรงกับคำค้นหา'); return; }
+      data.data.forEach(food => foodGrid.appendChild(createFoodCard(food)));
+    }
+
+    function createFoodCard(food) {
+      const div = document.createElement('div'); div.className = 'food-card';
+      const herbsText = Array.isArray(food.herbs) ? food.herbs.join(', ') : (food.herbs || 'ไม่ระบุ');
+      const moodText = Array.isArray(food.mood) ? food.mood.join(', ') : (food.mood || 'ไม่ระบุ');
+      div.innerHTML = `<img src="${food.image}" alt="${food.name}" onerror="this.src='/placeholder.svg?height=220&width=300&text=No+Image'">
+        <div class="food-card-content">
+          <div class="food-name">${food.name}</div>
+          <div class="food-info">
+            <div class="food-calories"><i class="fas fa-fire"></i> แคลอรี่: ${food.calories || 'ไม่ระบุ'} cal</div>
+            <div class="food-herbs"><i class="fas fa-leaf"></i> สมุนไพร: ${herbsText}</div>
+            <div class="food-mood"><i class="fas fa-heart"></i> อารมณ์: ${moodText}</div>
+          </div>
+          <a href="food_detail.php?id=${food.id}" class="view-detail-btn"><i class="fas fa-eye"></i> ดูรายละเอียด</a>
+        </div>`;
+      return div;
+    }
+
+    function displayPagination(p) {
+      const div = document.getElementById('pagination'); div.innerHTML = ''; if (p.total_pages <= 1) return;
+      const prev = document.createElement('button'); prev.innerHTML = '<i class="fas fa-chevron-left"></i> ก่อนหน้า'; prev.disabled = !p.has_prev_page; prev.onclick = () => changePage(p.current_page - 1); div.appendChild(prev);
+      const start = Math.max(1, p.current_page - 2), end = Math.min(p.total_pages, p.current_page + 2);
+      for (let i = start; i <= end; i++) { const btn = document.createElement('button'); btn.textContent = i; btn.className = i === p.current_page ? 'current' : ''; btn.onclick = () => changePage(i); div.appendChild(btn); }
+      const next = document.createElement('button'); next.innerHTML = 'ถัดไป <i class="fas fa-chevron-right"></i>'; next.disabled = !p.has_next_page; next.onclick = () => changePage(p.current_page + 1); div.appendChild(next);
+    }
+
+    function changePage(page) { currentPage = page; currentSearch ? performSearch() : loadAllFoods(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function showLoading() { document.getElementById('foodGrid').innerHTML = `<div class="empty-state"><div class="loading" style="width:40px;height:40px;border-width:4px;"></div><h3>กำลังโหลด...</h3><p>กรุณารอสักครู่</p></div>`; }
+    function showError(msg) { document.getElementById('foodGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#e53e3e;"></i><h3>เกิดข้อผิดพลาด</h3><p>${msg}</p><button class="nav-btn nav-search-btn" onclick="loadAllFoods()"><i class="fas fa-refresh"></i> ลองใหม่</button></div>`; }
+    function showEmptyState(title, msg) { document.getElementById('foodGrid').innerHTML = `<div class="empty-state"><i class="fas fa-search"></i><h3>${title}</h3><p>${msg}</p><button class="nav-btn nav-all-btn" onclick="loadAllFoods()"><i class="fas fa-list"></i> ดูอาหารทั้งหมด</button></div>`; }
+    function updateSearchStats(term, total) { const s = document.getElementById('searchStats'); s.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><i class="fas fa-search" style="color:#667eea;"></i><strong>ผลการค้นหา:</strong> พบ ${total.toLocaleString()} รายการ ${term !== 'ทั้งหมด' ? `<span style="margin-left:8px;">สำหรับ "<strong>${term}</strong>"</span>` : ''}</div>`; s.style.display = 'block'; }
+    function hideSearchStats() { document.getElementById('searchStats').style.display = 'none'; }
+    // Toggle dropdown
+    const dropdownBtn = document.querySelector('.dropdown-btn');
+    const dropdown = document.querySelector('.dropdown');
+
+    dropdownBtn.addEventListener('click', () => {
+      dropdown.classList.toggle('show');
+    });
+
+    // ปิด dropdown เมื่อคลิกนอก
+    window.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+
+  </script>
+</body>
+
+</html>

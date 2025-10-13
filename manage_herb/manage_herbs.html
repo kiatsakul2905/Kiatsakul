@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการสมุนไพร</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            padding: 30px;
+        }
+        .header {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+        .btn-danger-custom {
+            background: linear-gradient(45deg, #dc3545, #e74c3c);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .btn-danger-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+            color: white;
+        }
+        .btn-warning-custom {
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .btn-warning-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+            color: white;
+        }
+        .form-control {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .table thead th {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 15px;
+        }
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        .search-box {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .herb-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .herb-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="mb-3">
+            <a href="../Admin/admin_dashboard.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> ย้อนกลับ
+            </a>
+        </div>
+        <div class="header">
+            <h1><i class="fas fa-leaf"></i> ระบบจัดการสมุนไพร</h1>
+            <p class="mb-0">จัดการข้อมูลสมุนไพรไทยแบบครบครัน</p>
+        </div>
+
+        <!-- Search and Add Section -->
+        <div class="search-box">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text bg-success text-white">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="ค้นหาสมุนไพร...">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-custom w-100" data-bs-toggle="modal" data-bs-target="#addHerbModal">
+                        <i class="fas fa-plus"></i> เพิ่มสมุนไพรใหม่
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Herbs Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>รหัส</th>
+                        <th>ชื่อสมุนไพร</th>
+                        <th>สรรพคุณ</th>
+                        <th>จำนวนอาหารที่ใช้</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="herbsTableBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center" id="pagination">
+                <!-- Pagination will be loaded here -->
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Add Herb Modal -->
+    <div class="modal fade" id="addHerbModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-plus"></i> เพิ่มสมุนไพรใหม่</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addHerbForm">
+                        <div class="mb-3">
+                            <label for="herbName" class="form-label">ชื่อสมุนไพร</label>
+                            <input type="text" class="form-control" id="herbName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="herbProperties" class="form-label">สรรพคุณ</label>
+                            <input type="text" class="form-control" id="herbProperties" name="properties">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-custom" onclick="addHerb()">บันทึก</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Herb Modal -->
+    <div class="modal fade" id="editHerbModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> แก้ไขสมุนไพร</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editHerbForm">
+                        <input type="hidden" id="editHerbId" name="id">
+                        <div class="mb-3">
+                            <label for="editHerbName" class="form-label">ชื่อสมุนไพร</label>
+                            <input type="text" class="form-control" id="editHerbName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editHerbProperties" class="form-label">สรรพคุณ</label>
+                            <input type="text" class="form-control" id="editHerbProperties" name="properties">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-custom" onclick="updateHerb()">บันทึกการแก้ไข</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteHerbModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-trash"></i> ยืนยันการลบ</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>คุณแน่ใจหรือไม่ที่จะลบสมุนไพร "<span id="deleteHerbName"></span>" ?</p>
+                    <p class="text-danger"><small>การลบนี้ไม่สามารถย้อนกลับได้</small></p>
+                    <input type="hidden" id="deleteHerbId">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-danger-custom" onclick="deleteHerb()">ลบ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let searchTerm = '';
+
+        // Load herbs on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHerbs();
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                searchTerm = this.value;
+                currentPage = 1;
+                loadHerbs();
+            });
+        });
+
+        // Load herbs with pagination and search
+        function loadHerbs() {
+            const params = new URLSearchParams({
+                page: currentPage,
+                search: searchTerm
+            });
+
+            fetch(`read_herbs.php?${params}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayHerbs(data.herbs);
+                        updatePagination(data.pagination);
+                    } else {
+                        showAlert('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'danger');
+                });
+        }
+
+        // Display herbs in table
+        function displayHerbs(herbs) {
+            const tbody = document.getElementById('herbsTableBody');
+            tbody.innerHTML = '';
+
+            if (herbs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <i class="fas fa-search"></i> ไม่พบข้อมูลสมุนไพร
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            herbs.forEach(herb => {
+                const row = `
+                    <tr>
+                        <td>${herb.id}</td>
+                        <td><i class="fas fa-leaf text-success"></i> ${herb.name}</td>
+                        <td>${herb.properties || '-'}</td>
+                        <td><span class="badge bg-info">${herb.food_count || 0} เมนู</span></td>
+                        <td>
+                            <button class="btn btn-warning-custom btn-sm me-2" onclick="editHerbModal(${herb.id}, '${herb.name}', '${herb.properties || ''}')">
+                                <i class="fas fa-edit"></i> แก้ไข
+                            </button>
+                            <button class="btn btn-danger-custom btn-sm" onclick="deleteHerbModal(${herb.id}, '${herb.name}')">
+                                <i class="fas fa-trash"></i> ลบ
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Update pagination
+        function updatePagination(pagination) {
+            totalPages = pagination.total_pages;
+            const paginationEl = document.getElementById('pagination');
+            paginationEl.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            // Previous button
+            const prevDisabled = currentPage === 1 ? 'disabled' : '';
+            paginationEl.innerHTML += `
+                <li class="page-item ${prevDisabled}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">ก่อนหน้า</a>
+                </li>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                const active = i === currentPage ? 'active' : '';
+                paginationEl.innerHTML += `
+                    <li class="page-item ${active}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>
+                `;
+            }
+
+            // Next button
+            const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+            paginationEl.innerHTML += `
+                <li class="page-item ${nextDisabled}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">ถัดไป</a>
+                </li>
+            `;
+        }
+
+        // Change page
+        function changePage(page) {
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                loadHerbs();
+            }
+        }
+
+        // Add herb
+        function addHerb() {
+            const form = document.getElementById('addHerbForm');
+            const formData = new FormData(form);
+
+            fetch('create_herb.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('เพิ่มสมุนไพรสำเร็จ', 'success');
+                    form.reset();
+                    bootstrap.Modal.getInstance(document.getElementById('addHerbModal')).hide();
+                    loadHerbs();
+                } else {
+                    showAlert(data.message || 'เกิดข้อผิดพลาดในการเพิ่มสมุนไพร', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'danger');
+            });
+        }
+
+        // Show edit modal
+        function editHerbModal(id, name, properties) {
+            document.getElementById('editHerbId').value = id;
+            document.getElementById('editHerbName').value = name;
+            document.getElementById('editHerbProperties').value = properties || '';
+            new bootstrap.Modal(document.getElementById('editHerbModal')).show();
+        }
+
+        // Update herb
+        function updateHerb() {
+            const form = document.getElementById('editHerbForm');
+            const formData = new FormData(form);
+
+            fetch('update_herb.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('แก้ไขสมุนไพรสำเร็จ', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('editHerbModal')).hide();
+                    loadHerbs();
+                } else {
+                    showAlert(data.message || 'เกิดข้อผิดพลาดในการแก้ไขสมุนไพร', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'danger');
+            });
+        }
+
+        // Show delete modal
+        function deleteHerbModal(id, name) {
+            document.getElementById('deleteHerbId').value = id;
+            document.getElementById('deleteHerbName').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteHerbModal')).show();
+        }
+
+        // Delete herb
+        function deleteHerb() {
+            const id = document.getElementById('deleteHerbId').value;
+
+            fetch('delete_herb.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('ลบสมุนไพรสำเร็จ', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('deleteHerbModal')).hide();
+                    loadHerbs();
+                } else {
+                    showAlert(data.message || 'เกิดข้อผิดพลาดในการลบสมุนไพร', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'danger');
+            });
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

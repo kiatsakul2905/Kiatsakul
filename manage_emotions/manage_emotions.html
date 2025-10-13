@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จัดการอารมณ์ - MoodFood Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+        * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Kanit', sans-serif;
+      background: #f3f4f6;
+      min-height: 100vh;
+    }
+
+    nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo i {
+      color: #ff6b6b;
+      font-size: 32px;
+    }
+
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .back-btn {
+      background: linear-gradient(45deg, #718096, #4a5568);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(113, 128, 150, 0.4);
+    }
+
+    .controls {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .search-box {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px 12px 48px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #718096;
+    }
+
+    .add-btn {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tr:hover {
+      background: #f7fafc;
+    }
+
+    .action-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin: 0 2px;
+      transition: all 0.3s ease;
+    }
+
+    .edit-btn {
+      background: #4299e1;
+      color: white;
+    }
+
+    .edit-btn:hover {
+      background: #3182ce;
+      transform: translateY(-1px);
+    }
+
+    .delete-btn {
+      background: #f56565;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #e53e3e;
+      transform: translateY(-1px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: white;
+      margin: 5% auto;
+      padding: 32px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .close {
+      color: #718096;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .close:hover {
+      color: #2d3748;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #2d3748;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 24px;
+    }
+
+    .btn-cancel {
+      background: #e2e8f0;
+      color: #4a5568;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: #cbd5e0;
+    }
+
+    .btn-save {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #ff6b6b;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="logo"><i class="fas fa-heart"></i> MoodFood Admin</div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">จัดการอารมณ์ (Keywords)</h1>
+      <a href="../Admin/admin_dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> กลับสู่แดชบอร์ด</a>
+    </div>
+
+    <div class="controls">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="ค้นหา Keyword...">
+      </div>
+      <button class="add-btn" onclick="openAddModal()"><i class="fas fa-plus"></i> เพิ่ม Keyword</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>กำลังโหลดข้อมูล...</p>
+    </div>
+
+    <div class="table-container">
+      <table id="emotionsTable">
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>Keyword</th>
+            <th>ชื่ออารมณ์</th>
+            <th>การจัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="emotionsTableBody"></tbody>
+      </table>
+    </div>
+
+    <div style="text-align:center; margin-top:16px;">
+      <button id="prevPage" onclick="changePage(currentPage-1)">ก่อนหน้า</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage" onclick="changePage(currentPage+1)">ถัดไป</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="emotionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">เพิ่ม Keyword</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <form id="emotionForm">
+        <input type="hidden" id="emotionId" name="id">
+        <div class="form-group">
+          <label for="keyword">Keyword *</label>
+          <input type="text" id="keyword" name="keyword" required>
+        </div>
+        <div class="form-group">
+          <label for="name">ชื่ออารมณ์ *</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+          <button type="submit" class="btn-save">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let emotions = [];
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    let editingEmotionId = null;
+
+    function loadEmotions() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('emotionsTable').style.display = 'none';
+
+      fetch('read.php')
+        .then(res => res.ok ? res.json() : Promise.reject(res.status))
+        .then(data => {
+          emotions = data.records || [];
+          currentPage = 1;
+          displayEmotionsPage(currentPage);
+        })
+        .catch(err => {
+          console.error(err);
+          emotions = [];
+          displayEmotionsPage(currentPage);
+        })
+        .finally(() => {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('emotionsTable').style.display = 'table';
+        });
+    }
+
+    function displayEmotionsPage(page) {
+      const tbody = document.getElementById('emotionsTableBody');
+      tbody.innerHTML = '';
+
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const toShow = emotions.slice(start, end);
+
+      toShow.forEach((emo, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${start + idx + 1}</td>
+          <td>${emo.keyword}</td>
+          <td>${emo.name || emo.keyword}</td>
+          <td>
+            <button class="action-btn edit-btn" onclick="openEditModal(${emo.id})"><i class="fas fa-edit"></i> แก้ไข</button>
+            <button class="action-btn delete-btn" onclick="deleteEmotion(${emo.id})"><i class="fas fa-trash"></i> ลบ</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      const totalPages = Math.ceil(emotions.length / rowsPerPage);
+      document.getElementById('pageInfo').textContent = `หน้า ${page} จาก ${totalPages}`;
+      document.getElementById('prevPage').disabled = page === 1;
+      document.getElementById('nextPage').disabled = page === totalPages;
+    }
+
+    function changePage(page) {
+      if (page < 1 || page > Math.ceil(emotions.length / rowsPerPage)) return;
+      currentPage = page;
+      displayEmotionsPage(page);
+    }
+
+    function openAddModal() {
+      editingEmotionId = null;
+      document.getElementById("modalTitle").textContent = "เพิ่ม Keyword ใหม่";
+      document.getElementById("emotionForm").reset();
+      document.getElementById("emotionModal").style.display = "block";
+    }
+
+    function openEditModal(id) {
+      editingEmotionId = id;
+      const emo = emotions.find(e => e.id == id);
+      if (!emo) return;
+
+      document.getElementById("modalTitle").textContent = "แก้ไข Keyword";
+      document.getElementById("emotionId").value = emo.id;
+      document.getElementById("keyword").value = emo.keyword;
+      document.getElementById("name").value = emo.name || emo.keyword;
+      document.getElementById("emotionModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("emotionModal").style.display = "none";
+    }
+
+    function deleteEmotion(id) {
+      if (!confirm("คุณแน่ใจว่าต้องการลบคำนี้?")) return;
+      fetch(`delete.php?id=${id}`, { method: "DELETE" })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            loadEmotions();
+          } else {
+            alert("เกิดข้อผิดพลาดในการลบ");
+          }
+        });
+    }
+
+    document.getElementById("emotionForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const url = editingEmotionId ? "update.php" : "create.php";
+
+      fetch(url, { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            closeModal();
+            loadEmotions();
+          } else {
+            alert("บันทึกไม่สำเร็จ");
+          }
+        });
+    });
+
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const q = e.target.value.toLowerCase();
+      const filtered = emotions.filter(emo =>
+        emo.keyword.toLowerCase().includes(q) || 
+        (emo.name && emo.name.toLowerCase().includes(q))
+      );
+      displayFilteredEmotions(filtered);
+    });
+
+    function displayFilteredEmotions(filtered) {
+      const tbody = document.getElementById('emotionsTableBody');
+      tbody.innerHTML = '';
+      filtered.forEach((emo, idx) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${emo.keyword}</td>
+          <td>${emo.name || emo.keyword}</td>
+          <td>
+            <button class="action-btn edit-btn" onclick="openEditModal(${emo.id})"><i class="fas fa-edit"></i> แก้ไข</button>
+            <button class="action-btn delete-btn" onclick="deleteEmotion(${emo.id})"><i class="fas fa-trash"></i> ลบ</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+      document.getElementById('pageInfo').textContent = `ผลลัพธ์ ${filtered.length} รายการ`;
+      document.getElementById('prevPage').disabled = true;
+      document.getElementById('nextPage').disabled = true;
+    }
+
+    window.addEventListener("DOMContentLoaded", loadEmotions);
+  </script>
+</body>
+</html>

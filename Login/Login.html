@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>เข้าสู่ระบบ - MoodFood</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <style>
+    .error {
+      color: #ef4444;
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .success {
+      color: #10b981;
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
+  <div class="w-full max-w-md md:max-w-lg lg:max-w-2xl bg-white shadow-xl rounded-xl p-8 md:p-12">
+    
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <div class="flex justify-center items-center space-x-2 mb-4">
+        <svg class="h-10 w-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 21C12 21 4 13.5 4 8.5C4 5.5 6.5 3 9.5 3C11.24 3 12.91 4 13.5 5.44C14.09 4 15.76 3 17.5 3C20.5 3 23 5.5 23 8.5C23 13.5 15 21 15 21H12Z" />
+        </svg>
+        <span class="text-3xl md:text-4xl font-bold text-gray-800">MoodFood</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-semibold">เข้าสู่ระบบ</h2>
+      <p class="text-gray-600 mt-2 text-md md:text-lg">เข้าสู่ระบบเพื่อใช้งานฟีเจอร์ต่างๆ</p>
+    </div>
+
+    <form id="loginForm" class="space-y-6">
+      <!-- Email -->
+      <div>
+        <label for="emailInput" class="block mb-2 font-medium text-gray-700 text-lg">อีเมล</label>
+        <input type="email" name="email" id="emailInput" placeholder="กรอกอีเมลของคุณ" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-300 text-lg" />
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="passwordInput" class="block mb-2 font-medium text-gray-700 text-lg">รหัสผ่าน</label>
+        <input type="password" name="password" id="passwordInput" placeholder="กรอกรหัสผ่าน" required
+          class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-300 text-lg" />
+      </div>
+
+      <button type="submit" id="loginBtn"
+        class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg text-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+        <span id="btnText">เข้าสู่ระบบ</span>
+        <span id="btnSpinner" class="spinner hidden ml-2"></span>
+      </button>
+
+      <p class="text-center text-md text-gray-600 mt-4">
+        <a href="../Sign_up/Sign_up.html" class="text-red-500 hover:underline">สมัครสมาชิก</a> |
+        <a href="../Forgot_password/forgot_password.html" class="text-red-500 hover:underline">ลืมรหัสผ่าน</a>
+      </p>
+    </form>
+
+    <div id="message" class="mt-6"></div>
+    <div id="logoutSection" class="mt-6 text-center hidden">
+      <p class="text-md text-gray-600 mb-2">คุณเข้าสู่ระบบแล้ว</p>
+      <button id="logoutBtn" class="text-red-500 hover:text-red-700 text-md underline">
+        ออกจากระบบและล็อกอินใหม่
+      </button>
+    </div>
+  </div>
+</body>
+
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('message');
+    const logoutSection = document.getElementById('logoutSection');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+
+    // ฟังก์ชันแสดงข้อความ
+    function showMessage(text, type) {
+      message.innerHTML = `<div class="${type}">${text}</div>`;
+    }
+
+    // ฟังก์ชันจัดการสถานะปุ่ม
+    function setButtonLoading(loading) {
+      loginBtn.disabled = loading;
+      if (loading) {
+        btnText.textContent = 'กำลังเข้าสู่ระบบ...';
+        btnSpinner.classList.remove('hidden');
+      } else {
+        btnText.textContent = 'เข้าสู่ระบบ';
+        btnSpinner.classList.add('hidden');
+      }
+    }
+
+    // ฟังก์ชัน redirect
+    function redirectByRole(role, redirectUrl) {
+      let targetUrl = redirectUrl;
+      let successMessage = 'เข้าสู่ระบบสำเร็จ กำลังพาไป';
+
+      if (role === 'admin') {
+        successMessage += 'หน้าผู้ดูแลระบบ...';
+      } else {
+        successMessage += 'หน้าหลัก...';
+      }
+
+      showMessage(successMessage, 'success');
+
+      let countdown = 3;
+      const countdownInterval = setInterval(() => {
+        showMessage(`${successMessage} (${countdown})`, 'success');
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(countdownInterval);
+          window.location.href = targetUrl;
+        }
+      }, 1000);
+    }
+
+    // Event listener สำหรับ form submit
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      
+      showMessage('', '');
+      setButtonLoading(true);
+
+      const formData = new FormData(form);
+
+      fetch('login.php', {
+        method: 'POST',
+        body: formData,
+        credentials: 'same-origin'
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.text();
+        })
+        .then(text => {
+          console.log('Response text:', text);
+          
+          try {
+            const data = JSON.parse(text);
+            console.log('Parsed data:', data);
+            
+            if (data.success) {
+              redirectByRole(data.role, data.redirect_url);
+            } else {
+              showMessage(data.message || 'เข้าสู่ระบบไม่สำเร็จ', 'error');
+            }
+          } catch (e) {
+            console.error('JSON Parse Error:', e);
+            console.error('Response text:', text);
+            showMessage('เกิดข้อผิดพลาดในการประมวลผลข้อมูล', 'error');
+          }
+        })
+        .catch(err => {
+          console.error('Fetch Error:', err);
+          showMessage('เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง', 'error');
+        })
+        .finally(() => {
+          setButtonLoading(false);
+        });
+    });
+
+    // ตรวจสอบสถานะล็อกอินเมื่อโหลดหน้า
+    window.addEventListener('load', function() {
+      fetch('check_login_status.php', {
+        method: 'GET',
+        credentials: 'same-origin'
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Check login status response:', data);
+        if (data.loggedIn) {
+          // แสดงตัวเลือกให้ผู้ใช้
+          logoutSection.classList.remove('hidden');
+          
+          // ซ่อนฟอร์มล็อกอิน
+          form.style.display = 'none';
+          
+          // แสดงข้อความ
+          let statusMessage = `คุณเข้าสู่ระบบแล้วในฐานะ: ${data.user.first_name} ${data.user.last_name}`;
+          if (data.role === 'admin') {
+            statusMessage += ' (ผู้ดูแลระบบ)';
+          }
+          showMessage(statusMessage, 'success');
+          
+          // Event listener สำหรับปุ่ม logout
+          logoutBtn.addEventListener('click', function() {
+            fetch('logout.php', {
+              method: 'GET',
+              credentials: 'same-origin'
+            })
+            .then(() => {
+              showMessage('ออกจากระบบสำเร็จ', 'success');
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
+            })
+            .catch(err => {
+              console.error('Logout error:', err);
+              location.reload();
+            });
+          });
+          
+          // Auto redirect หลัง 5 วินาที
+          setTimeout(() => {
+            window.location.href = data.redirect_url;
+          }, 5000);
+        }
+      })
+      .catch(err => {
+        console.log('Not logged in or error checking status:', err);
+      });
+    });
+
+    console.log('Login page loaded - ready for user input');
+  </script>
+
+
+</html>

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MoodFood Home</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo i {
+      color: #ff6b6b;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 107, 107, 0.6));
+      font-size: 32px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo:hover i {
+      transform: scale(1.1);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(255, 107, 107, 0.8));
+      transition: all 0.3s ease;
+    }
+
+    /* Navigation Right Section */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Navigation Search Button */
+    .nav-search-btn {
+      padding: 12px 20px;
+      border-radius: 25px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .profile-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      cursor: pointer;
+      border: 3px solid transparent;
+      background: linear-gradient(white, white) padding-box,
+        linear-gradient(45deg, #ff6b6b, #ee5a24) border-box;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .profile-icon:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: absolute;
+      top: 70px;
+      right: 24px;
+      width: 350px;
+      max-height: 500px;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      border-radius: 16px;
+      padding: 20px;
+      display: none;
+      z-index: 1000;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dropdown.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dropdown p {
+      margin: 6px 0;
+      font-size: 14px;
+      color: #4a5568;
+      font-weight: 400;
+    }
+
+    .dropdown img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown button {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .dropdown button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Main Content Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Mood Dashboard */
+    .mood-dashboard {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .mood-dashboard h3 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-weight: 600;
+      font-size: 24px;
+      color: #2d3748;
+      text-align: center;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .input-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .mood-dashboard input[type="text"] {
+      flex: 1;
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 107, 107, 0.2);
+      font-size: 16px;
+      font-family: 'Kanit', sans-serif;
+      background: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .mood-dashboard input[type="text"]:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .analyze-btn {
+      padding: 16px 24px;
+      background: linear-gradient(45deg, #48bb78, #38a169);
+      border-radius: 12px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+      min-width: 120px;
+    }
+
+    .analyze-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+    }
+
+    /* Search Food Section */
+    .search-food-section {
+      text-align: center;
+      margin: 24px 0;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 107, 107, 0.1);
+    }
+
+    .search-food-btn {
+      padding: 16px 32px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      border-radius: 25px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Kanit', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-food-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .mood-result {
+      background: linear-gradient(45deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 36, 0.1));
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin: 16px 0;
+      border-left: 4px solid #ff6b6b;
+      font-weight: 500;
+    }
+
+    /* Food Grid */
+    .food-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .food-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    .food-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .food-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .food-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .food-card-content {
+      padding: 20px;
+    }
+
+    .food-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
+
+    .food-calories {
+      color: #718096;
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .food-calories i {
+      color: #ff8c00;
+    }
+
+    .food-herbs {
+      color: #48bb78;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .view-detail-btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px 16px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+
+    .view-detail-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .modal-content {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 40px 32px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .modal h3 {
+      margin-bottom: 24px;
+      color: #2d3748;
+      font-weight: 600;
+      font-size: 20px;
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .modal-keywords {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .keyword-btn {
+      background: linear-gradient(45deg, rgba(255, 107, 107, 0.1), rgba(238, 90, 36, 0.1));
+      border: 2px solid rgba(255, 107, 107, 0.3);
+      color: #ff6b6b;
+      padding: 12px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    .keyword-btn:hover {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+    }
+
+    .modal-close-btn {
+      background: linear-gradient(45deg, #718096, #4a5568);
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Kanit', sans-serif;
+      box-shadow: 0 4px 12px rgba(113, 128, 150, 0.3);
+    }
+
+    .modal-close-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(113, 128, 150, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-right {
+        gap: 12px;
+      }
+
+      .nav-search-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      .mood-dashboard {
+        padding: 24px 20px;
+      }
+
+      .input-container {
+        flex-direction: column;
+      }
+
+      .analyze-btn {
+        width: 100%;
+      }
+
+      .search-food-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .food-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+      }
+
+      .dropdown {
+        width: 300px;
+        right: 16px;
+      }
+    }
+
+    /* Loading Animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, #e55656, #d44a1a);
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="logo">
+      <i class="fas fa-heart"></i> MoodFood
+    </div>
+    <div class="nav-right">
+      <button class="nav-search-btn" onclick="location.href='../Search/food-search.html'">
+        <i class="fas fa-search"></i> ค้นหาอาหาร
+      </button>
+      <img src="../uploads/default-profile.png" alt="โปรไฟล์" class="profile-icon" id="profileIcon" />
+    </div>
+
+    <div class="dropdown" id="profileDropdown">
+      <p><strong>ข้อมูลส่วนตัว</strong></p>
+      <p id="userEmail"></p>
+      <p id="userPhone"></p>
+      <img id="userImg" alt="โปรไฟล์ผู้ใช้" />
+      <button onclick="location.href='../Edit_profile/edit_profile.html'">
+        <i class="fas fa-edit"></i> แก้ไขข้อมูลส่วนตัว
+      </button>
+      <button onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+      </button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="mood-dashboard">
+      <h3><i class="fas fa-smile"></i> วันนี้คุณรู้สึกอย่างไร?</h3>
+      <div class="input-container">
+        <input type="text" id="dropdownMoodInput" placeholder="บอกเราเกี่ยวกับความรู้สึกของคุณวันนี้...">
+        <button class="analyze-btn" onclick="analyzeMoodFromText()">
+          <i class="fas fa-search"></i> วิเคราะห์
+        </button>
+      </div>
+
+      <div class="search-food-section">
+        <p style="text-align: center; color: #718096; margin: 20px 0 16px 0;">
+          หรือคุณสามารถค้นหาอาหารโดยตรงได้
+        </p>
+        <button class="search-food-btn" onclick="location.href='../Search/food-search.html'">
+          <i class="fas fa-utensils"></i> ค้นหาอาหารทั้งหมด
+        </button>
+      </div>
+
+      <div id="dropdownMoodResult" class="mood-result" style="display: none;"></div>
+      <div class="mood-buttons" id="dropdownMoodButtons"></div>
+      <div class="food-list" id="dropdownFoodList"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="moodModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-heart"></i> กรุณาเลือกคำที่ตรงกับอารมณ์มากที่สุด</h3>
+      <div id="modalKeywords" class="modal-keywords"></div>
+      <button onclick="closeMoodModal()" class="modal-close-btn">
+        <i class="fas fa-times"></i> ยกเลิก
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const profileIcon = document.getElementById("profileIcon");
+    const profileDropdown = document.getElementById("profileDropdown");
+
+    profileIcon.addEventListener("click", () => {
+      const isShown = profileDropdown.classList.toggle("show");
+      profileIcon.setAttribute("aria-expanded", isShown);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!profileDropdown.contains(e.target) && e.target !== profileIcon) {
+        profileDropdown.classList.remove("show");
+        profileIcon.setAttribute("aria-expanded", false);
+      }
+    });
+
+    function logout() {
+      fetch('logout.php').then(() => window.location.href = '../main/main.html');
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      fetch("check_login.php")
+        .then(res => res.json())
+        .then(user => {
+          document.getElementById("userEmail").innerHTML = `<i class="fas fa-envelope"></i> อีเมล: ${user.email}`;
+          document.getElementById("userPhone").innerHTML = `<i class="fas fa-phone"></i> เบอร์โทร: ${user.phone}`;
+          document.getElementById("userImg").src = `../uploads/${user.profile_image}`;
+          document.getElementById("profileIcon").src = `../uploads/${user.profile_image}`;
+        })
+        .catch(() => {
+          alert("กรุณาเข้าสู่ระบบอีกครั้ง");
+          window.location.href = "../main/main.html";
+        });
+    });
+
+    function analyzeMoodFromText() {
+      const text = document.getElementById("dropdownMoodInput").value.trim();
+      const btn = document.querySelector('.analyze-btn');
+      if (!text) { alert("กรุณากรอกข้อความ"); return; }
+
+      btn.innerHTML = '<div class="loading"></div> กำลังวิเคราะห์...'; btn.disabled = true;
+
+      fetch("http://localhost:5000/check_keywords", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const fH = data.keywords_happy || [], fS = data.keywords_sad || [];
+          const allH = data.all_keywords?.happy || [], allS = data.all_keywords?.sad || [];
+
+          if (data.message === "เท่ากัน" && fH.length && fS.length) showMoodModal(fH, fS);
+          else if (data.message === "ไม่พบคำ") showMoodModal(allH, allS, 3);
+          else if (data.message === "มีความสุข" || data.message === "มีความทุกข์") {
+            const mood = data.message === "มีความสุข" ? "happy" : "sad";
+            processMoodResult(mood, mood === "happy" ? fH : fS);
+          } else showMoodModal(allH, allS, 3);
+        })
+        .catch(err => { console.error(err); alert("วิเคราะห์ไม่ได้"); })
+        .finally(() => { btn.innerHTML = '<i class="fas fa-search"></i> วิเคราะห์'; btn.disabled = false; });
+    }
+
+    function showMoodModal(group1, group2, selectCount = null) {
+      const modal = document.getElementById("moodModal");
+      const container = document.getElementById("modalKeywords"); container.innerHTML = "";
+
+      if (selectCount) {
+        group1 = shuffleArray(group1).slice(0, selectCount);
+        group2 = shuffleArray(group2).slice(0, selectCount);
+      }
+
+      [...group1, ...group2].forEach(word => {
+        const btn = document.createElement("button");
+        btn.textContent = word; btn.className = "keyword-btn";
+        btn.onclick = () => {
+          const mood = group1.includes(word) ? "happy" : "sad";
+          closeMoodModal();
+          processMoodResult(mood, [word], `เลือก: ${word}`);
+        };
+        container.appendChild(btn);
+      });
+      modal.style.display = "flex";
+    }
+
+    function shuffleArray(array) { const arr = [...array]; for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+
+    function closeMoodModal() { document.getElementById("moodModal").style.display = "none"; }
+
+    function processMoodResult(mood, keywords) {
+      const resultDiv = document.getElementById("dropdownMoodResult");
+      const moodIcon = mood === "happy" ? "😊" : "😢";
+
+      resultDiv.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <span style="font-size:24px;">${moodIcon}</span>
+          <strong>อารมณ์:</strong> ${mood === "happy" ? "มีความสุข" : "เศร้า"}
+        </div>
+        <div><strong>คำที่เลือก/พบ:</strong> ${keywords.join(", ") || "ไม่มีคำที่ตรง"}</div>
+    `;
+      resultDiv.style.display = "block";
+
+      // ส่ง "happy"/"sad" ไม่ใช่ "สุข"/"เศร้า"
+      fetch(`recommend.php?mood=${encodeURIComponent(mood)}`)
+        .then(res => res.json())
+        .then(foodData => {
+          const foodList = document.getElementById("dropdownFoodList");
+          foodList.innerHTML = "";
+
+          foodData.forEach(food => {
+            const div = document.createElement("div");
+            div.className = "food-card";
+            div.innerHTML = `
+                <img src="${food.image}" alt="${food.name}" />
+                <div class="food-card-content">
+                    <div class="food-name">${food.name}</div>
+                    <div class="food-calories">
+                        <i class="fas fa-fire"></i> แคลอรี่: ${food.calories} cal
+                    </div>
+                    <div class="food-herbs">
+                        <i class="fas fa-leaf"></i> สมุนไพร: ${Array.isArray(food.herbs) ? food.herbs.join(", ") : food.herbs}
+                    </div>
+                    <a href="../Search/food_detail.php?id=${food.id}" class="view-detail-btn">
+                        <i class="fas fa-eye"></i> ดูรายละเอียด
+                    </a>
+                </div>
+            `;
+            foodList.appendChild(div);
+          });
+        })
+        .catch(() => {
+          document.getElementById("dropdownFoodList").innerHTML =
+            `<p style="color:#ff6b6b; text-align:center; padding:20px;">
+            <i class="fas fa-exclamation-triangle"></i> ไม่สามารถดึงข้อมูลอาหารได้
+        </p>`;
+        });
+    }
+    function showMoodModal(group1, group2, selectCount = null) {
+      const modal = document.getElementById("moodModal");
+      const container = document.getElementById("modalKeywords");
+      container.innerHTML = "";
+
+      if (selectCount) {
+        group1 = shuffleArray(group1).slice(0, selectCount);
+        group2 = shuffleArray(group2).slice(0, selectCount);
+      }
+
+      const allWords = [...group1, ...group2];
+      allWords.forEach(word => {
+        const btn = document.createElement("button");
+        btn.textContent = word;
+        btn.className = "keyword-btn";
+        btn.onclick = () => {
+          const mood = group1.includes(word) ? "happy" : "sad";
+          closeMoodModal();
+          processMoodResult(mood, [word], `เลือก: ${word}`);
+        };
+        container.appendChild(btn);
+      });
+
+      modal.style.display = "flex";
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function closeMoodModal() {
+      document.getElementById("moodModal").style.display = "none";
+    }
+  </script>
+</body>
+
+
+</html>

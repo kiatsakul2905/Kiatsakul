@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MoodFood</title>
+    <!-- เพิ่ม Kanit font และ Font Awesome 6 -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        /* แทนที่ CSS เดิมด้วยสไตล์จาก navigation-profile.html */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Kanit', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+        }
+
+        /* Navigation Styles */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo i {
+            color: #ff6b6b;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 8px rgba(255, 107, 107, 0.6));
+            font-size: 32px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo:hover i {
+            transform: scale(1.1);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 12px rgba(255, 107, 107, 0.8));
+            transition: all 0.3s ease;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .profile-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(45deg, #ff6b6b, #ee5a24) border-box;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: absolute;
+            top: 70px;
+            right: 24px;
+            width: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+            z-index: 1000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown p {
+            margin: 6px 0;
+            font-size: 14px;
+            color: #4a5568;
+            font-weight: 400;
+        }
+
+        .dropdown img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown button {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .dropdown button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        /* Admin Dashboard Content Styles */
+        .admin-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 18px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .admin-card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .admin-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .admin-card-desc {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-right {
+                gap: 12px;
+            }
+
+            .dropdown {
+                width: 300px;
+                right: 16px;
+            }
+
+            .admin-content {
+                padding: 24px 16px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #e55656, #d44a1a);
+        }
+    </style>
+</head>
+<body>
+    <!-- แทนที่ header เดิมด้วย Navigation จาก navigation-profile.html -->
+    <nav>
+        <div class="logo">
+            <i class="fas fa-heart"></i> 
+            MoodFood Admin
+        </div>
+        
+        <div class="nav-right">
+             <img src="../uploads/default-profile.png" alt="โปรไฟล์" class="profile-icon" id="profileIcon" /> 
+        </div>
+        
+        <!-- ปรับปรุง dropdown ให้ตรงกับสไตล์ใหม่ -->
+        <div class="dropdown" id="profileDropdown">
+            <p><strong>ข้อมูลส่วนตัว</strong></p>
+            <p id="userEmail"></p>
+            <p id="userPhone"></p>
+            <img id="userImg" alt="โปรไฟล์ผู้ใช้" />
+            <button onclick="location.href='../Edit_profile/edit_profile.html'">
+                <i class="fas fa-edit"></i> แก้ไขข้อมูลส่วนตัว
+            </button>
+            <button onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+            </button>
+        </div>
+    </nav>
+
+    <!-- ปรับปรุงเนื้อหา admin dashboard ให้ใช้ class ใหม่ -->
+    <div class="admin-content">
+        <h1 style="font-size: 32px; font-weight: 600; color: #2d3748; margin-bottom: 32px;">แดชบอร์ดผู้ดูแลระบบ</h1>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card card-hover">
+                <div class="stat-number" style="color: #3182ce;" id="totalUsers">0</div>
+                <div class="stat-label">จำนวนผู้ใช้ทั้งหมด</div>
+            </div>
+            <div class="stat-card card-hover">
+                <div class="stat-number" style="color: #38a169;" id="totalFoods">0</div>
+                <div class="stat-label">จำนวนอาหารในระบบ</div>
+            </div>
+        </div>
+
+        <!-- Admin Menu -->
+        <h2 style="font-size: 24px; font-weight: 600; color: #2d3748; margin-bottom: 24px;">เมนูการจัดการ</h2>
+        <div class="admin-grid">
+            <a href="../manage_users/manage_users.html" class="admin-card">
+                <div class="admin-card-icon">👥</div>
+                <div class="admin-card-title">จัดการผู้ใช้</div>
+                <div class="admin-card-desc">เพิ่ม แก้ไข ลบข้อมูลผู้ใช้</div>
+            </a>
+            <a href="../manage_foods/manage_foods.html" class="admin-card">
+                <div class="admin-card-icon">🍽️</div>
+                <div class="admin-card-title">จัดการอาหาร</div>
+                <div class="admin-card-desc">เพิ่ม แก้ไข ลบข้อมูลอาหาร</div>
+            </a>
+            <a href="../manage_herb/manage_herbs.html" class="admin-card">
+                <div class="admin-card-icon">🌿</div>
+                <div class="admin-card-title">จัดการสมุนไพร</div>
+                <div class="admin-card-desc">เพิ่ม แก้ไข ลบข้อมูลสมุนไพร</div>
+            </a>
+            <a href="../manage_emotions/manage_emotions.html" class="admin-card">
+                <div class="admin-card-icon">❤️</div>
+                <div class="admin-card-title">จัดการอารมณ์</div>
+                <div class="admin-card-desc">เพิ่ม แก้ไข ลบข้อมูลอารมณ์</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const profileIcon = document.getElementById("profileIcon");
+        const profileDropdown = document.getElementById("profileDropdown");
+        
+        profileIcon.addEventListener("click", () => {
+            const isShown = profileDropdown.classList.toggle("show");
+            profileIcon.setAttribute("aria-expanded", isShown);
+        });
+        
+        document.addEventListener("click", (e) => {
+            if (!profileDropdown.contains(e.target) && e.target !== profileIcon) {
+                profileDropdown.classList.remove("show");
+                profileIcon.setAttribute("aria-expanded", false);
+            }
+        });
+
+        function logout() {
+            fetch('../Home/logout.php').then(() => window.location.href = '../main/main.html');
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            fetch("../Home/check_login.php")
+                .then(res => {
+                    if (!res.ok) throw new Error("ไม่พบข้อมูลผู้ใช้");
+                    return res.json();
+                })
+                .then(user => {
+                    document.getElementById("userEmail").innerHTML = `<i class="fas fa-envelope"></i> อีเมล: ${user.email}`;
+                    document.getElementById("userPhone").innerHTML = `<i class="fas fa-phone"></i> เบอร์โทร: ${user.phone}`;
+                    document.getElementById("userImg").src = `../uploads/${user.profile_image}`;
+                    document.getElementById("profileIcon").src = `../uploads/${user.profile_image}`;
+                })
+                .catch(() => {
+                    document.getElementById("userEmail").innerHTML = `<i class="fas fa-envelope"></i> อีเมล: admin@moodfood.com`;
+                    document.getElementById("userPhone").innerHTML = `<i class="fas fa-phone"></i> เบอร์โทร: 081-234-5678`;
+                    document.getElementById("userImg").src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ff6b6b'/><text x='50' y='55' font-family='Arial' font-size='40' fill='white' text-anchor='middle'>A</text></svg>`;
+                    document.getElementById("profileIcon").src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><rect width='48' height='48' rx='24' fill='%23ff6b6b'/><text x='24' y='30' font-family='Arial' font-size='20' fill='white' text-anchor='middle'>A</text></svg>`;
+                });
+        });
+
+        fetch('admin_stats.php')
+            .then(res => {
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Stats API ไม่ได้ส่ง JSON response กลับมา');
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('totalUsers').textContent = data.stats.users;
+                    document.getElementById('totalFoods').textContent = data.stats.foods;
+                }
+            })
+            .catch(err => {
+                console.error('Error loading stats:', err);
+                document.getElementById('totalUsers').textContent = '100';
+                document.getElementById('totalFoods').textContent = '85';
+            });
+    </script>
+</body>
+</html>
