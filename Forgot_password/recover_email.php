@@ -49,7 +49,7 @@ $stmt->bind_param('sss', $email, $token, $expires_at);
 $stmt->execute();
 
 // สร้างลิงก์รีเซ็ต (แก้ URL ให้ตรงกับโฮสต์ของคุณ)
-$reset_link = "http://192.168.1.48/your_project/reset_password.php?token=$token&email=" . urlencode($email);
+$reset_link = "http://localhost/your_project/reset_password.php?token=$token&email=" . urlencode($email);
 
 // ส่งอีเมลด้วย PHPMailer
 $mail = new PHPMailer(true);
@@ -62,12 +62,12 @@ try {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'kiatsakul.p@ku.th'; // เปลี่ยนเป็นอีเมลของคุณ
-    $mail->Password = 'ktru ezwt hynl ggxb';    // รหัสผ่านแอป 16 หลัก
+    $mail->Username = ''; // เปลี่ยนเป็นอีเมลของคุณ
+    $mail->Password = '';    // รหัสผ่านแอป 16 หลัก
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
 
-    $mail->setFrom('kiatsakul.p@ku.th', 'MoodFood');
+    $mail->setFrom('','MoodFood');
     $mail->isHTML(true);
     $mail->Subject = 'MoodFood';
     $mail->Body = "

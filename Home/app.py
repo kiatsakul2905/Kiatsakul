@@ -10,8 +10,8 @@ CORS(app)  # อนุญาต CORS
 def get_db_connection():
     return pymysql.connect(
         host='localhost',
-        user="Admin00",
-        password="123456",
+        user="",
+        password="",
         database="foodie_moodie",
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
@@ -39,7 +39,7 @@ def check_keywords():
 
     keywords_group1_lower, keywords_group2_lower, all_happy, all_sad = get_keywords_from_db()
     words = [w.lower() for w in word_tokenize(text, engine='newmm')]
-
+    print("🧩 การตัดคำ:", " / ".join(words))
     found_group1 = [w for w in words if w in keywords_group1_lower]
     found_group2 = [w for w in words if w in keywords_group2_lower]
 

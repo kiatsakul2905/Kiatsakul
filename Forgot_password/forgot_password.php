@@ -51,10 +51,13 @@ $stmt->execute();
 // บันทึก token ใหม่
 $stmt = $conn->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
 $stmt->bind_param('sss', $email, $token, $expires_at);
-$stmt->execute();
+if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'message' => 'บันทึก token ไม่สำเร็จ: ' . $stmt->error]);
+    exit;
+}
 
 // สร้างลิงก์รีเซ็ต
-$reset_link = "http://localhost/NLPTEST/Forgot_password/reset_password.php?token=$token&email=" . urlencode($email);
+$reset_link = "http://localhost//NLPTEST/Forgot_password/reset_password.php?token=$token&email=" . urlencode($email);
 
 // ส่งอีเมลด้วย PHPMailer
 $mail = new PHPMailer(true);
@@ -62,12 +65,12 @@ try {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'kiatsakul.p@ku.th'; // เปลี่ยนเป็นอีเมลของคุณ
-    $mail->Password = 'ktru ezwt hynl ggxb'; // รหัสผ่านแอป 16 หลัก
+    $mail->Username = ''; // เปลี่ยนเป็นอีเมลของคุณ
+    $mail->Password = ''; // รหัสผ่านแอป 16 หลัก
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
 
-    $mail->setFrom('kiatsakul.p@ku.th', 'MoodFood');
+    $mail->setFrom('','MoodFood');
     $mail->addAddress($email);
 
     $mail->isHTML(true);

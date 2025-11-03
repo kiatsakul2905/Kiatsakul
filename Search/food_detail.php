@@ -16,11 +16,11 @@ $sql = "SELECT
     f.recipe,
     f.calories_img,
     f.history,
-    e.name AS mood,
+    GROUP_CONCAT(DISTINCT e.name) AS mood,
     GROUP_CONCAT(DISTINCT CONCAT(h.name, ' (', h.properties, ')')) AS herbs
 FROM foods f
-JOIN food_emotions fe ON f.id = fe.food_id
-JOIN emotions e ON fe.emotion_id = e.id
+LEFT JOIN food_emotions fe ON f.id = fe.food_id
+LEFT JOIN emotions e ON fe.emotion_id = e.id
 LEFT JOIN food_herbs fh ON f.id = fh.food_id
 LEFT JOIN herbs h ON fh.herb_id = h.id
 WHERE f.id = $id
@@ -37,8 +37,20 @@ $herbsArray = $food && $food['herbs'] ? explode(', ', $food['herbs']) : [];
 $ingredientsArray = $food && $food['recipe'] ? array_map('trim', explode(',', $food['recipe'])) : [];
 $recipeSteps = $food && $food['recipe'] ? array_filter(explode("\n", $food['recipe'])) : [];
 $descriptionSteps = $food && $food['description'] ? array_filter(explode("\n", $food['description'])) : [];
-?>
 
+// --- NEW: ดึงเฉพาะชื่อสมุนไพรจาก herbsArray (ตัดส่วน properties) ---
+$herbNames = [];
+if (!empty($herbsArray)) {
+    foreach ($herbsArray as $h) {
+        if (preg_match('/^([^\(]+)/', $h, $m)) {
+            $herbNames[] = trim($m[1]);
+        } else {
+            $herbNames[] = trim($h);
+        }
+    }
+}
+$combinedIngredients = array_values(array_filter(array_unique(array_merge($ingredientsArray, $herbNames))));
+?>
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -130,7 +142,7 @@ $descriptionSteps = $food && $food['description'] ? array_filter(explode("\n", $
                             <h3 class="text-xl font-semibold text-orange-900">วัตถุดิบที่ใช้</h3>
                         </div>
                         <ol class="space-y-3">
-                            <?php foreach ($ingredientsArray as $index => $ingredient): ?>
+                            <?php foreach ($combinedIngredients as $index => $ingredient): ?>
                                 <li class="flex items-start gap-3">
                                     <span class="text-sm text-gray-700 leading-relaxed"><?= htmlspecialchars(trim($ingredient)) ?></span>
                                 </li>

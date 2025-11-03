@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";      // ชื่อเซิร์ฟเวอร์ฐานข้อมูล
-$username = "Admin00";           // ชื่อผู้ใช้ฐานข้อมูล
-$password = "123456";            // รหัสผ่านฐานข้อมูล (ถ้าไม่มีให้เว้นว่าง)
+$username = "";           // ชื่อผู้ใช้ฐานข้อมูล
+$password = "";            // รหัสผ่านฐานข้อมูล (ถ้าไม่มีให้เว้นว่าง)
 $dbname = "foodie_moodie";      // ชื่อฐานข้อมูลที่ใช้
 
 // สร้างการเชื่อมต่อ
@@ -17,8 +17,8 @@ if ($conn->connect_error) {
 class Database {
     private $host = "localhost";
     private $db_name = "foodie_moodie";
-    private $username = "Admin00";
-    private $password = "123456";
+    private $username = "";
+    private $password = "";
     public $conn;
 
     public function getConnection(){
